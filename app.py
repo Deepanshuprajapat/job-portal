@@ -1,4 +1,4 @@
-import os
+import os 
 import sqlite3
 from functools import wraps
 from flask import Flask, request, redirect, url_for, render_template, session, flash, g
@@ -54,52 +54,8 @@ def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
-def insert_sample_jobs():
-    with app.app_context():
-        db = get_db()
 
-        # Check if jobs already exist
-        existing_jobs = db.execute(
-            "SELECT COUNT(*) as total FROM jobs"
-        ).fetchone()["total"]
-
-        # Check if recruiter exists
-        recruiter = db.execute(
-            "SELECT id FROM users WHERE role='recruiter' LIMIT 1"
-        ).fetchone()
-
-        if existing_jobs == 0 and recruiter:
-            recruiter_id = recruiter["id"]
-
-            sample_jobs = [
-                ("Python Developer", "Infosys", "Bangalore", "Develop and maintain Flask applications.", "Python, Flask, SQL"),
-                ("Full Stack Developer", "TCS", "Hyderabad", "Work on frontend and backend systems.", "Python, React, MySQL"),
-                ("Data Scientist", "Wipro", "Pune", "Build machine learning models.", "Python, Pandas, Machine Learning"),
-                ("Frontend Developer", "Accenture", "Mumbai", "Create responsive web interfaces.", "HTML, CSS, JavaScript, React"),
-                ("Backend Developer", "HCL", "Noida", "Develop APIs and backend services.", "Python, Flask, PostgreSQL"),
-                ("Machine Learning Engineer", "IBM", "Bangalore", "Design and deploy ML systems.", "Python, TensorFlow, NLP"),
-                ("DevOps Engineer", "Capgemini", "Chennai", "Manage CI/CD and cloud deployments.", "Docker, Kubernetes, AWS"),
-                ("Cloud Engineer", "Amazon", "Remote", "Deploy and maintain cloud infrastructure.", "AWS, Linux, Terraform"),
-                ("Cyber Security Analyst", "Tech Mahindra", "Delhi", "Monitor and improve security systems.", "Security, SIEM, Networking"),
-                ("AI Engineer", "OpenAI Labs", "Remote", "Develop AI-powered applications.", "Python, LLM, Machine Learning")
-            ]
-
-            for title, company, location, description, requirements in sample_jobs:
-                db.execute("""
-                    INSERT INTO jobs
-                    (recruiter_id, title, company, location, description, requirements)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                """, (
-                    recruiter_id,
-                    title,
-                    company,
-                    location,
-                    description,
-                    requirements
-                ))
-
-            db.commit()
-            print("10 sample jobs inserted successfully.")        
+             
         # Create jobs table
         db.execute('''
             CREATE TABLE IF NOT EXISTS jobs (
