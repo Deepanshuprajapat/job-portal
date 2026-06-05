@@ -169,22 +169,9 @@ http://127.0.0.1:5000
 
 ---
 
-## 📸 Screenshots
-
-Add screenshots of:
-
-* Home Page
-* Job Listings
-* Recruiter Dashboard
-* Candidate Dashboard
-* Resume Match Score
-* Job Application Page
-
----
-
 ## 👨‍💻 Author
 
-**Deepanshu Prajapati**
+**Deepanshu Prajapat**
 
 * GitHub: https://github.com/Deepanshuprajapat
 * LinkedIn: https://www.linkedin.com/in/deepanshu-prajapat-04769a30a
