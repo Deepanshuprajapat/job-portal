@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Candidate Dashboard - ScreenAI{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="dashboard-title">
+        <h2>Candidate Dashboard</h2>
+        <p>Track your job applications and check resume matching statistics</p>
+    </div>
+    <a href="{{ url_for('jobs') }}" class="btn btn-primary">
+        <i data-lucide="search" style="width: 1.1rem; height: 1.1rem;"></i> Browse Active Jobs
+    </a>
+</div>
+
+<section style="margin-top: 2rem;">
+    <div class="grid-title">
+        <i data-lucide="send" style="color: var(--accent);"></i>
+        <h3>Submitted Applications</h3>
+    </div>
+    
+    {% if applications %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Location</th>
+                        <th>Date Applied</th>
+                        <th>Match Score</th>
+                        <th>Application Status</th>
+                        <th style="text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600; color: var(--text-bright);">{{ app.title }}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">{{ app.company }}</div>
+                            </td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                    <i data-lucide="map-pin" style="width: 0.95rem; height: 0.95rem; color: var(--text-muted);"></i>
+                                    {{ app.location }}
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-size: 0.9rem; color: var(--text-muted);">{{ app.applied_at.split(' ')[0] }}</div>
+                            </td>
+                            <td>
+                                {% set score = app.match_score %}
+                                <div class="score-badge {% if score >= 70 %}score-high{% elif score >= 40 %}score-medium{% else %}score-low{% endif %}">
+                                    <i data-lucide="cpu" style="width: 0.9rem; height: 0.9rem;"></i>
+                                    {{ score }}%
+                                </div>
+                            </td>
+                            <td>
+                                {% set status = app.status %}
+                                <span class="badge {% if status == 'Shortlisted' %}badge-shortlisted{% elif status == 'Rejected' %}badge-rejected{% elif status == 'Reviewed' %}badge-reviewed{% else %}badge-applied{% endif %}">
+                                    {{ status }}
+                                </span>
+                            </td>
+                            <td style="text-align: right;">
+                                <a href="{{ url_for('job_detail', job_id=app.job_id) }}" class="btn btn-secondary btn-sm">
+                                    <i data-lucide="external-link" style="width: 0.95rem; height: 0.95rem; margin-right: 0.25rem;"></i> View Job
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state" style="background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color);">
+            <div class="empty-state-icon"><i data-lucide="file-text"></i></div>
+            <h4>No applications submitted yet</h4>
+            <p>Find matches for your skills and apply with your resume to see your match score.</p>
+            <a href="{{ url_for('jobs') }}" class="btn btn-primary" style="margin-top: 1.5rem;">
+                <i data-lucide="search" style="width: 1.1rem; height: 1.1rem;"></i> Search for Jobs
+            </a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

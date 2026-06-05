@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}ScreenAI - Advanced Resume Screening & Job Portal{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Find Your Next Opportunity<br>With AI-Powered Matching</h1>
+    <p>Discover jobs tailored to your skills or recruit candidates using our automatic smart resume screening matcher, ensuring high compatibility matches in seconds.</p>
+    
+    {% if 'user_id' not in session %}
+        <div style="display: flex; justify-content: center; gap: 1rem;">
+            <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+            <a href="{{ url_for('jobs') }}" class="btn btn-secondary">Explore Jobs</a>
+        </div>
+    {% endif %}
+</section>
+
+<div class="search-box">
+    <form action="{{ url_for('jobs') }}" method="GET">
+        <div class="input-wrapper" style="display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="search" style="color: var(--text-muted); position: absolute; left: 1rem;"></i>
+            <input type="text" name="search" placeholder="Job title, keywords, or company..." style="padding-left: 2.75rem;">
+        </div>
+        <div class="input-wrapper" style="display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="map-pin" style="color: var(--text-muted); position: absolute; left: 1rem;"></i>
+            <input type="text" name="location" placeholder="City, state, or Remote..." style="padding-left: 2.75rem;">
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i data-lucide="search" style="width: 1.1rem; height: 1.1rem;"></i> Search
+        </button>
+    </form>
+</div>
+
+<section style="margin-top: 3rem;">
+    <div class="grid-title">
+        <i data-lucide="sparkles" style="color: var(--accent);"></i>
+        <h2>Featured Opportunities</h2>
+    </div>
+    
+    {% if jobs %}
+        <div class="jobs-grid">
+            {% for job in jobs %}
+                <div class="job-card">
+                    <div class="job-card-header">
+                        <div class="company-tag">{{ job.company }}</div>
+                        <h3>{{ job.title }}</h3>
+                        <div class="job-meta">
+                            <span><i data-lucide="map-pin" style="width: 0.9rem; height: 0.9rem;"></i> {{ job.location }}</span>
+                            <span><i data-lucide="user" style="width: 0.9rem; height: 0.9rem;"></i> Recruiter: {{ job.recruiter_name }}</span>
+                        </div>
+                    </div>
+                    <p class="job-desc-snippet">{{ job.description }}</p>
+                    <div class="job-card-footer">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Posted recently</span>
+                        <a href="{{ url_for('job_detail', job_id=job.id) }}" class="btn btn-outline btn-sm">View Details</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div style="text-align: center; margin-top: 2.5rem;">
+            <a href="{{ url_for('jobs') }}" class="btn btn-secondary">
+                View All Jobs <i data-lucide="arrow-right" style="width: 1.1rem; height: 1.1rem;"></i>
+            </a>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon"><i data-lucide="briefcase"></i></div>
+            <h4>No jobs posted yet</h4>
+            <p>Check back later or register as a recruiter to post your first job!</p>
+            {% if session.get('role') == 'recruiter' %}
+                <a href="{{ url_for('post_job') }}" class="btn btn-primary" style="margin-top: 1.5rem;">Post a Job</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Applicants for {{ job.title }} - ScreenAI{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="dashboard-title">
+        <a href="{{ url_for('dashboard') }}" style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.9rem; color: var(--primary); font-weight: 600; margin-bottom: 1rem;">
+            <i data-lucide="arrow-left" style="width: 1rem; height: 1rem;"></i> Back to dashboard
+        </a>
+        <h2>Applicants for: {{ job.title }}</h2>
+        <p style="color: var(--accent); font-weight: 600; margin-top: 0.25rem;">{{ job.company }} &bull; {{ job.location }}</p>
+    </div>
+</div>
+
+<section style="margin-top: 2rem;">
+    <div class="grid-title">
+        <i data-lucide="users" style="color: var(--primary);"></i>
+        <h3>Candidate Pipeline (Ranked by AI Match Score)</h3>
+    </div>
+    
+    {% if applications %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Candidate Info</th>
+                        <th>Applied Date</th>
+                        <th>AI Match Score</th>
+                        <th>Resume File</th>
+                        <th>Application Status</th>
+                        <th style="text-align: right;">Update Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600; color: var(--text-bright);">{{ app.username }}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">{{ app.email }}</div>
+                            </td>
+                            <td>
+                                <div style="font-size: 0.9rem; color: var(--text-muted);">{{ app.applied_at.split(' ')[0] }}</div>
+                            </td>
+                            <td>
+                                {% set score = app.match_score %}
+                                <div class="score-badge {% if score >= 70 %}score-high{% elif score >= 40 %}score-medium{% else %}score-low{% endif %}">
+                                    <i data-lucide="cpu" style="width: 0.9rem; height: 0.9rem;"></i>
+                                    {{ score }}%
+                                </div>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('static', filename='uploads/' + app.resume_filename) }}" download class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <i data-lucide="download" style="width: 0.9rem; height: 0.9rem;"></i> Download Resume
+                                </a>
+                            </td>
+                            <td>
+                                {% set status = app.status %}
+                                <span class="badge {% if status == 'Shortlisted' %}badge-shortlisted{% elif status == 'Rejected' %}badge-rejected{% elif status == 'Reviewed' %}badge-reviewed{% else %}badge-applied{% endif %}">
+                                    {{ status }}
+                                </span>
+                            </td>
+                            <td style="text-align: right;">
+                                <form action="{{ url_for('update_status', app_id=app.id) }}" method="POST" style="display: inline-flex; gap: 0.5rem; align-items: center;">
+                                    <select name="status" class="form-group select" style="margin: 0; padding: 0.4rem 2rem 0.4rem 0.75rem; border-radius: 6px; font-size: 0.85rem; width: auto; background-position: right 0.75rem center;">
+                                        <option value="Applied" {% if app.status == 'Applied' %}selected{% endif %}>Applied</option>
+                                        <option value="Reviewed" {% if app.status == 'Reviewed' %}selected{% endif %}>Reviewed</option>
+                                        <option value="Shortlisted" {% if app.status == 'Shortlisted' %}selected{% endif %}>Shortlist</option>
+                                        <option value="Rejected" {% if app.status == 'Rejected' %}selected{% endif %}>Reject</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.4rem 0.75rem;">
+                                        <i data-lucide="check" style="width: 0.9rem; height: 0.9rem;"></i> Update
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state" style="background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color);">
+            <div class="empty-state-icon"><i data-lucide="users-2"></i></div>
+            <h4>No candidates have applied for this job yet</h4>
+            <p>Once candidates apply and upload their resumes, they will appear here ranked by their AI match compatibility.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

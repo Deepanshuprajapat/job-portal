@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Login - ScreenAI{% endblock %}
+
+{% block content %}
+<div class="glass-container">
+    <div class="form-title">Welcome Back</div>
+    <div class="form-subtitle">Log in to manage your jobs or applications</div>
+    
+    <form action="{{ url_for('login') }}" method="POST">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <div style="position: relative;">
+                <i data-lucide="mail" style="color: var(--text-muted); position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.1rem; height: 1.1rem;"></i>
+                <input type="email" id="email" name="email" required placeholder="name@company.com" style="padding-left: 2.75rem;">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div style="position: relative;">
+                <i data-lucide="lock" style="color: var(--text-muted); position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.1rem; height: 1.1rem;"></i>
+                <input type="password" id="password" name="password" required placeholder="Enter password" style="padding-left: 2.75rem;">
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+            <i data-lucide="log-in" style="width: 1.1rem; height: 1.1rem;"></i> Log In
+        </button>
+    </form>
+    
+    <div class="form-footer">
+        Don't have an account? <a href="{{ url_for('register') }}">Sign up here</a>
+    </div>
+</div>
+{% endblock %}

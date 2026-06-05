@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Recruiter Dashboard - ScreenAI{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="dashboard-title">
+        <h2>Recruiter Dashboard</h2>
+        <p>Manage your job postings and review AI resume match scores</p>
+    </div>
+    <a href="{{ url_for('post_job') }}" class="btn btn-primary">
+        <i data-lucide="plus-circle" style="width: 1.1rem; height: 1.1rem;"></i> Post a New Job
+    </a>
+</div>
+
+<section style="margin-top: 2rem;">
+    <div class="grid-title">
+        <i data-lucide="briefcase" style="color: var(--primary);"></i>
+        <h3>Your Active Job Postings</h3>
+    </div>
+    
+    {% if jobs %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Location</th>
+                        <th>Date Posted</th>
+                        <th>Applicants</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600; color: var(--text-bright);">{{ job.title }}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">{{ job.company }}</div>
+                            </td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                    <i data-lucide="map-pin" style="width: 0.95rem; height: 0.95rem; color: var(--text-muted);"></i>
+                                    {{ job.location }}
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-size: 0.9rem; color: var(--text-muted);">{{ job.posted_at.split(' ')[0] }}</div>
+                            </td>
+                            <td>
+                                <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: var(--primary); border: 1px solid rgba(99, 102, 241, 0.2); font-weight: 700;">
+                                    {{ job.applicant_count }} Application{{ 's' if job.applicant_count != 1 else '' }}
+                                </span>
+                            </td>
+                            <td style="text-align: right;">
+                                <div style="display: inline-flex; gap: 0.5rem;">
+                                    <a href="{{ url_for('job_detail', job_id=job.id) }}" class="btn btn-secondary btn-sm" title="View details">
+                                        <i data-lucide="eye" style="width: 1rem; height: 1rem;"></i>
+                                    </a>
+                                    <a href="{{ url_for('job_applications', job_id=job.id) }}" class="btn btn-primary btn-sm">
+                                        <i data-lucide="users" style="width: 1rem; height: 1rem; margin-right: 0.25rem;"></i> View Applicants
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state" style="background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color);">
+            <div class="empty-state-icon"><i data-lucide="briefcase"></i></div>
+            <h4>You haven't posted any jobs yet</h4>
+            <p>Post a job to start receiving applications and screening resumes instantly.</p>
+            <a href="{{ url_for('post_job') }}" class="btn btn-primary" style="margin-top: 1.5rem;">
+                <i data-lucide="plus-circle" style="width: 1.1rem; height: 1.1rem;"></i> Post Your First Job
+            </a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

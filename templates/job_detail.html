@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}{{ job.title }} at {{ job.company }} - ScreenAI{% endblock %}
+
+{% block content %}
+<div class="glass-container-lg" style="margin-top: 1rem;">
+    <div class="detail-header">
+        <a href="{{ url_for('jobs') }}" style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.9rem; color: var(--primary); font-weight: 600; margin-bottom: 1.5rem;">
+            <i data-lucide="arrow-left" style="width: 1rem; height: 1rem;"></i> Back to all jobs
+        </a>
+        <h1>{{ job.title }}</h1>
+        <div class="detail-company">{{ job.company }}</div>
+        
+        <div class="detail-meta">
+            <span><i data-lucide="map-pin" style="color: var(--primary); width: 1.1rem; height: 1.1rem;"></i> {{ job.location }}</span>
+            <span><i data-lucide="calendar" style="color: var(--primary); width: 1.1rem; height: 1.1rem;"></i> Posted on {{ job.posted_at.split(' ')[0] }}</span>
+            <span><i data-lucide="user" style="color: var(--primary); width: 1.1rem; height: 1.1rem;"></i> Managed by @{{ job.recruiter_name }}</span>
+        </div>
+    </div>
+    
+    <div class="detail-section">
+        <h3>Position Overview</h3>
+        <p style="white-space: pre-line;">{{ job.description }}</p>
+    </div>
+    
+    {% if job.requirements %}
+        <div class="detail-section">
+            <h3>Technical Requirements & Skills</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                {% for skill in job.requirements.split(',') %}
+                    {% if skill.strip() %}
+                        <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: var(--primary); border: 1.5px solid rgba(99, 102, 241, 0.2); font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+                            <i data-lucide="check" style="width: 0.9rem; height: 0.9rem; margin-right: 0.25rem;"></i>
+                            {{ skill.strip() }}
+                        </span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Application Form Logic -->
+    {% if 'user_id' not in session %}
+        <div class="apply-card" style="border-style: solid; background: rgba(255, 255, 255, 0.02);">
+            <i data-lucide="lock" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.75rem;"></i>
+            <h4 style="color: var(--text-bright); margin-bottom: 0.5rem;">Apply for this Position</h4>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Please create an account or log in to submit your resume and check your match score.</p>
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+                <a href="{{ url_for('login') }}" class="btn btn-secondary">Log In</a>
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Create Account</a>
+            </div>
+        </div>
+    {% elif session['role'] == 'recruiter' %}
+        {% if session['user_id'] == job.recruiter_id %}
+            <div class="apply-card" style="border-color: var(--primary); background: rgba(99, 102, 241, 0.03);">
+                <i data-lucide="user-cog" style="font-size: 2.2rem; color: var(--primary); margin-bottom: 0.75rem;"></i>
+                <h4 style="color: var(--text-bright); margin-bottom: 0.5rem;">Recruiter Tools</h4>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">You are the manager for this job posting. You can review applicants and match scores directly.</p>
+                <a href="{{ url_for('job_applications', job_id=job.id) }}" class="btn btn-primary">
+                    <i data-lucide="users" style="width: 1.1rem; height: 1.1rem; margin-right: 0.25rem;"></i> View Applicants Dashboard
+                </a>
+            </div>
+        {% else %}
+            <div class="apply-card" style="border-style: solid; background: rgba(255, 255, 255, 0.02);">
+                <i data-lucide="info" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.75rem;"></i>
+                <p style="color: var(--text-muted);">You are logged in as a recruiter. Resume uploading is only available for candidate accounts.</p>
+            </div>
+        {% endif %}
+    {% else %}
+        {% if has_applied %}
+            <div class="apply-card" style="border-style: solid; border-color: var(--success); background: var(--success-glow);">
+                <i data-lucide="check-circle" style="font-size: 2.5rem; color: var(--success); margin-bottom: 0.75rem; display: block; margin-left: auto; margin-right: auto;"></i>
+                <h4 style="color: var(--text-bright); margin-bottom: 0.5rem;">Application Already Submitted</h4>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">You applied for this job on {{ application.applied_at.split(' ')[0] }}.</p>
+                
+                <div style="display: flex; justify-content: center; gap: 2rem; align-items: center; flex-wrap: wrap;">
+                    <div style="text-align: left;">
+                        <span style="font-size: 0.9rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">AI Match Rating:</span>
+                        {% set score = application.match_score %}
+                        <div class="score-badge {% if score >= 70 %}score-high{% elif score >= 40 %}score-medium{% else %}score-low{% endif %}" style="font-size: 1.1rem; padding: 0.5rem 1rem;">
+                            <i data-lucide="cpu" style="width: 1.1rem; height: 1.1rem;"></i>
+                            {{ score }}% Match
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: left;">
+                        <span style="font-size: 0.9rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Application Status:</span>
+                        {% set status = application.status %}
+                        <span class="badge {% if status == 'Shortlisted' %}badge-shortlisted{% elif status == 'Rejected' %}badge-rejected{% elif status == 'Reviewed' %}badge-reviewed{% else %}badge-applied{% endif %}" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                            {{ status }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <form action="{{ url_for('apply_job', job_id=job.id) }}" method="POST" enctype="multipart/form-data">
+                <div class="apply-card">
+                    <label for="resume-upload" class="file-upload-label">
+                        <i data-lucide="upload-cloud" class="file-upload-icon"></i>
+                        <div class="file-upload-text">Upload your resume to apply</div>
+                        <div class="file-upload-subtext">Supports PDF and DOCX formats up to 16MB</div>
+                        <div id="file-name-display" class="selected-file-name"></div>
+                    </label>
+                    <input type="file" id="resume-upload" name="resume" accept=".pdf,.docx" required onchange="handleFileSelect(this)">
+                    
+                    <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
+                        <i data-lucide="send" style="width: 1.1rem; height: 1.1rem;"></i> Submit Application
+                    </button>
+                </div>
+            </form>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function handleFileSelect(input) {
+    const fileNameDisplay = document.getElementById('file-name-display');
+    if (input.files && input.files[0]) {
+        fileNameDisplay.textContent = `Selected: ${input.files[0].name}`;
+        fileNameDisplay.style.display = 'block';
+    } else {
+        fileNameDisplay.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

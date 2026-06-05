@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Search Jobs - ScreenAI{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <h2 style="font-size: 2.2rem; font-weight: 800; color: var(--text-bright); display: flex; align-items: center; gap: 0.5rem;">
+        <i data-lucide="search" style="color: var(--primary);"></i>
+        Browse Job Openings
+    </h2>
+    <p style="color: var(--text-muted); font-size: 1rem; margin-top: 0.25rem;">
+        Search and filter through all available positions to find the perfect fit
+    </p>
+</div>
+
+<div class="search-box" style="margin-top: 0; margin-bottom: 2.5rem;">
+    <form action="{{ url_for('jobs') }}" method="GET">
+        <div class="input-wrapper" style="display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="search" style="color: var(--text-muted); position: absolute; left: 1rem;"></i>
+            <input type="text" name="search" value="{{ search }}" placeholder="Job title, keywords, or company..." style="padding-left: 2.75rem;">
+        </div>
+        <div class="input-wrapper" style="display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="map-pin" style="color: var(--text-muted); position: absolute; left: 1rem;"></i>
+            <input type="text" name="location" value="{{ location }}" placeholder="City, state, or Remote..." style="padding-left: 2.75rem;">
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i data-lucide="sliders-horizontal" style="width: 1.1rem; height: 1.1rem;"></i> Apply Filters
+        </button>
+    </form>
+</div>
+
+<section>
+    {% if jobs %}
+        <div class="jobs-grid">
+            {% for job in jobs %}
+                <div class="job-card">
+                    <div class="job-card-header">
+                        <div class="company-tag">{{ job.company }}</div>
+                        <h3>{{ job.title }}</h3>
+                        <div class="job-meta">
+                            <span><i data-lucide="map-pin" style="width: 0.9rem; height: 0.9rem;"></i> {{ job.location }}</span>
+                            <span><i data-lucide="user" style="width: 0.9rem; height: 0.9rem;"></i> {{ job.recruiter_name }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if job.requirements %}
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1rem;">
+                            {% for req in job.requirements.split(',') %}
+                                {% if req.strip() %}
+                                    <span style="font-size: 0.75rem; background: rgba(99, 102, 241, 0.08); color: var(--primary); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid rgba(99, 102, 241, 0.15);">
+                                        {{ req.strip() }}
+                                    </span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <p class="job-desc-snippet">{{ job.description }}</p>
+                    
+                    <div class="job-card-footer">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Active Position</span>
+                        <a href="{{ url_for('job_detail', job_id=job.id) }}" class="btn btn-outline btn-sm">View Details & Apply</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state" style="background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color);">
+            <div class="empty-state-icon"><i data-lucide="search-x"></i></div>
+            <h4>No jobs match your search filters</h4>
+            <p>Try resetting the search fields or check back later for new openings.</p>
+            <a href="{{ url_for('jobs') }}" class="btn btn-secondary" style="margin-top: 1.5rem;">Reset Filters</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

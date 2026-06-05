@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Post a Job - ScreenAI{% endblock %}
+
+{% block content %}
+<div class="glass-container-lg" style="margin-top: 1rem;">
+    <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
+        <h2 style="font-size: 2.2rem; font-weight: 800; color: var(--text-bright); display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="plus-circle" style="color: var(--primary);"></i>
+            Post a New Job Opening
+        </h2>
+        <p style="color: var(--text-muted); font-size: 1rem; margin-top: 0.25rem;">
+            Create a detailed job listing to start receiving applications and automated resume matches
+        </p>
+    </div>
+    
+    <form action="{{ url_for('post_job') }}" method="POST">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div class="form-group">
+                <label for="title">Job Title</label>
+                <div style="position: relative;">
+                    <i data-lucide="briefcase" style="color: var(--text-muted); position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.1rem; height: 1.1rem;"></i>
+                    <input type="text" id="title" name="title" required placeholder="e.g. Senior Software Engineer" style="padding-left: 2.75rem;">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="company">Company Name</label>
+                <div style="position: relative;">
+                    <i data-lucide="building-2" style="color: var(--text-muted); position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.1rem; height: 1.1rem;"></i>
+                    <input type="text" id="company" name="company" required placeholder="e.g. Stripe Inc." style="padding-left: 2.75rem;">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="location">Location</label>
+            <div style="position: relative;">
+                <i data-lucide="map-pin" style="color: var(--text-muted); position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.1rem; height: 1.1rem;"></i>
+                <input type="text" id="location" name="location" required placeholder="e.g. San Francisco, CA or Remote" style="padding-left: 2.75rem;">
+            </div>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="requirements">Core Skills & Requirements (Comma Separated)</label>
+            <div style="position: relative;">
+                <i data-lucide="cpu" style="color: var(--text-muted); position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.1rem; height: 1.1rem;"></i>
+                <input type="text" id="requirements" name="requirements" placeholder="e.g. Python, Flask, React, SQL, AWS" style="padding-left: 2.75rem;">
+            </div>
+            <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">
+                * Highly recommended. These exact keywords will directly boost the candidates' AI resume matching scores.
+            </small>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 2rem;">
+            <label for="description">Job Description & Responsibilities</label>
+            <textarea id="description" name="description" rows="8" required placeholder="Provide a detailed overview of the role, team, and day-to-day responsibilities..." style="resize: vertical;"></textarea>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+                <i data-lucide="check-circle" style="width: 1.1rem; height: 1.1rem;"></i> Publish Job Listing
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
