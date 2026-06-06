@@ -173,7 +173,6 @@ https://job-portal-y85g.onrender.com/
 
 **Deepanshu Prajapat**
 
-* GitHub: https://github.com/Deepanshuprajapat
 * LinkedIn: https://www.linkedin.com/in/deepanshu-prajapat-04769a30a
 
 ---
