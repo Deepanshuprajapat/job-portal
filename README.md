@@ -137,7 +137,7 @@ python app.py
 ### 6. Open Browser
 
 ```text
-http://127.0.0.1:5000
+https://job-portal-y85g.onrender.com/
 ```
 
 ---
